@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data files (if large)
+data/*.csv
+data/*.json
+data/*.pkl
+data/*.txt
+data/*.hdf5
+
+# Results
+results/*.png
+results/*.pdf
+results/*.pkl
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.sublime-workspace
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Models (if they're large)
+*.pt
+*.pth
+*.bin
