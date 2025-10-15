@@ -21,8 +21,8 @@ class StructuralProbe(nn.Module):
         self.model_dim = model_dim
         self.probe_rank = probe_rank
         
-        # Projection matrix B
-        self.proj = nn.Parameter(torch.randn(model_dim, probe_rank))
+        # Projection matrix B - better initialization
+        self.proj = nn.Parameter(torch.randn(model_dim, probe_rank) * 0.01)  # Smaller init
         
     def forward(self, embeddings):
         """
@@ -43,6 +43,9 @@ class StructuralProbe(nn.Module):
         
         # Squared L2 distance
         distances = torch.sum(diff ** 2, dim=-1)  # [seq_len, seq_len]
+        
+        # Add small epsilon to diagonal to avoid numerical issues
+        distances = distances + torch.eye(distances.size(0)) * 1e-8
         
         return distances
 
@@ -86,12 +89,13 @@ class UnsupervisedProbe:
         gold_distances = self.decoder.edges_to_distance_matrix(edges, n)
         gold_distances = torch.tensor(gold_distances, dtype=torch.float32)
         
-        # Compute loss (mean squared error)
-        loss = torch.mean((pred_distances - gold_distances) ** 2)
+        # Compute loss (mean squared error) with normalization
+        loss = torch.nn.functional.mse_loss(pred_distances, gold_distances)
         
-        # Backpropagation
+        # Backpropagation with gradient clipping
         self.optimizer.zero_grad()
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.probe.parameters(), max_norm=1.0)
         self.optimizer.step()
         
         return loss.item()
@@ -108,16 +112,17 @@ class UnsupervisedProbe:
             avg_loss: average loss for the epoch
         """
         total_loss = 0
+        count = 0
         
         for embeddings in embeddings_list:
             if method == 'mst':
                 loss = self.train_step_mst(embeddings)
+                total_loss += loss
+                count += 1
             else:
                 raise NotImplementedError(f"Method {method} not implemented")
-            
-            total_loss += loss
         
-        avg_loss = total_loss / len(embeddings_list)
+        avg_loss = total_loss / max(count, 1)
         self.loss_history.append(avg_loss)
         
         return avg_loss
