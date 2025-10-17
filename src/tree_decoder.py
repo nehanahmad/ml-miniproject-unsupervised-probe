@@ -27,6 +27,42 @@ class TreeDecoder:
         """Initialize the TreeDecoder."""
         pass
     
+    def edges_to_distance_matrix(self, edges, n):
+        """
+        Convert a tree (given as edges) to a distance matrix.
+        
+        The distance between two nodes is the length of the path between them
+        in the tree (i.e., the number of edges on the path).
+        
+        Args:
+            edges: list of tuples (i, j) representing tree edges
+            n: number of nodes in the tree
+            
+        Returns:
+            distance_matrix: numpy array [n x n] where distance_matrix[i][j]
+                           is the tree distance between nodes i and j
+        """
+        # Initialize distance matrix with infinity
+        dist = np.full((n, n), np.inf)
+        
+        # Distance from each node to itself is 0
+        for i in range(n):
+            dist[i][i] = 0
+        
+        # Set direct edge distances to 1
+        for i, j in edges:
+            dist[i][j] = 1
+            dist[j][i] = 1
+        
+        # Floyd-Warshall algorithm to compute all-pairs shortest paths
+        for k in range(n):
+            for i in range(n):
+                for j in range(n):
+                    if dist[i][k] + dist[k][j] < dist[i][j]:
+                        dist[i][j] = dist[i][k] + dist[k][j]
+        
+        return dist
+    
     def minimum_spanning_tree(self, distance_matrix):
         """
         Decode tree using Minimum Spanning Tree (Prim's algorithm).

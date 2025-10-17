@@ -349,8 +349,8 @@ nx.draw(G_ilp, pos, ax=axes[1,1], with_labels=True, node_color='lightgreen',
         node_size=500, font_size=10, font_weight='bold')
 
 plt.tight_layout()
-plt.savefig(os.path.join(results_dir, 'experiment1.png'), dpi=300, bbox_inches='tight')
-print("✅ Saved plot to results/experiment1.png")
+plt.savefig(os.path.join(results_dir, 'experiment1_with_ilp.png'), dpi=300, bbox_inches='tight')
+print("✅ Saved plot to results/experiment1_with_ilp.png")
 plt.show()
 
 print("\n" + "="*70)
