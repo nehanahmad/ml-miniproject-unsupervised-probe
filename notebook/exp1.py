@@ -6,20 +6,20 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
 # ============================================================================
 # SETUP
 # ============================================================================
 
-# First, let's install PuLP if needed
 try:
     import pulp
-    print("✅ PuLP is installed")
+    print("PuLP is installed")
 except ImportError:
     print("📦 Installing PuLP...")
     import subprocess
     subprocess.check_call(['pip', 'install', '-q', 'pulp'])
     import pulp
-    print("✅ PuLP installed successfully")
+    print("PuLP installed successfully")
 
 # Import our tree decoder
 import sys
@@ -37,7 +37,8 @@ results_dir = os.path.join(parent_dir, 'results')
 os.makedirs(results_dir, exist_ok=True)
 
 np.random.seed(42)
-print("✅ Setup complete!")
+print("Setup complete!")
+
 
 # ============================================================================
 # HELPER FUNCTIONS
@@ -99,6 +100,7 @@ def compute_frobenius_norm(pred_distances, gold_distances):
     diff = pred_distances - gold_distances
     return np.linalg.norm(diff, ord='fro')
 
+
 # ============================================================================
 # GENERATE DATA
 # ============================================================================
@@ -115,7 +117,8 @@ for i in range(n_trees):
     edges = generate_random_tree(n_nodes)
     all_trees.append(edges)
 
-print(f"✅ Generated {len(all_trees)} random trees with {n_nodes} nodes each")
+print(f"Generated {len(all_trees)} random trees with {n_nodes} nodes each")
+
 
 # ============================================================================
 # EXPERIMENT: Single Tree
@@ -162,6 +165,7 @@ print(f"  Average Frobenius Norm: {avg_frob_mst_single:.3f}")
 print(f"\nILP Results (n={len(results_single['ilp']['edge_acc'])} trees):")
 print(f"  Average Edge Accuracy: {avg_edge_acc_ilp_single:.3f}")
 print(f"  Average Frobenius Norm: {avg_frob_ilp_single:.3f}")
+
 
 # ============================================================================
 # EXPERIMENT: Two Trees (Mixture)
@@ -213,6 +217,7 @@ print(f"\nILP Results (n={len(results_two['ilp']['edge_acc'])} mixtures):")
 print(f"  Average Edge Accuracy: {avg_edge_acc_ilp_two:.3f}")
 print(f"  Average Frobenius Norm: {avg_frob_ilp_two:.3f}")
 
+
 # ============================================================================
 # EXPERIMENT: Five Trees (Mixture)
 # ============================================================================
@@ -261,8 +266,9 @@ print(f"\nILP Results (n={len(results_five['ilp']['edge_acc'])} mixtures):")
 print(f"  Average Edge Accuracy: {avg_edge_acc_ilp_five:.3f}")
 print(f"  Average Frobenius Norm: {avg_frob_ilp_five:.3f}")
 
+
 # ============================================================================
-# SUMMARY TABLES (Like in the poster)
+# SUMMARY TABLES
 # ============================================================================
 
 print("\n" + "="*70)
@@ -282,6 +288,7 @@ print(f"\n{'Method':<10} {'Single Tree':<15} {'Two Trees':<15} {'Five Trees':<15
 print("-" * 60)
 print(f"{'MST':<10} {avg_frob_mst_single:<15.3f} {avg_frob_mst_two:<15.3f} {avg_frob_mst_five:<15.3f}")
 print(f"{'ILP':<10} {avg_frob_ilp_single:<15.3f} {avg_frob_ilp_two:<15.3f} {avg_frob_ilp_five:<15.3f}")
+
 
 # ============================================================================
 # VISUALIZATION
@@ -349,19 +356,10 @@ nx.draw(G_ilp, pos, ax=axes[1,1], with_labels=True, node_color='lightgreen',
         node_size=500, font_size=10, font_weight='bold')
 
 plt.tight_layout()
-plt.savefig(os.path.join(results_dir, 'experiment1_with_ilp.png'), dpi=300, bbox_inches='tight')
-print("✅ Saved plot to results/experiment1_with_ilp.png")
+plt.savefig(os.path.join(results_dir, 'experiment1.png'), dpi=300, bbox_inches='tight')
+print("✅ Saved plot to results/experiment1.png")
 plt.show()
 
 print("\n" + "="*70)
-print("EXPERIMENT 1 COMPLETE! ✅")
+print("EXPERIMENT 1 COMPLETE!")
 print("="*70)
-print("\nKey Findings:")
-print("1. Both MST and ILP perfectly reconstruct single trees (accuracy ≈ 1.0)")
-print("2. Performance degrades with tree mixtures for both methods")
-print("3. MST is typically faster and more robust than ILP")
-print("4. ILP can sometimes find slightly better solutions for mixtures")
-print("\n💡 For the unsupervised probe, MST is the preferred decoder due to:")
-print("   - Guaranteed polynomial time complexity O(E log V)")
-print("   - No need for optimization solver")
-print("   - Similar or better performance in practice")
